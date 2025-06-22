@@ -1,54 +1,41 @@
-import fs from "fs/promises";
-import path from "path";
-import { nanoid } from "nanoid";
-
-const contactsPath = path.resolve("db", "contacts.json");
+import Contact from "../models/Contact.js";
+import HttpError from "../helpers/HttpError.js";
 
 async function listContacts() {
-    const contacts = await fs.readFile(contactsPath, "utf-8");
-    return JSON.parse(contacts);
+    return Contact.findAll();
 }
 
-async function getContactById(contactId) {
-    console.log(contactId);
-    const contacts = await listContacts();
-    const contact = contacts.find(contact => contact.id === contactId);
-    return contact || null;
+async function getContactById(id) {
+    return Contact.findByPk(id);
 }
 
-async function removeContact(contactId) {
-    const contacts = await listContacts();
-    const index = contacts.findIndex(contact => contact.id === contactId);
-    if (index === -1) return null;
-    const [result] = contacts.splice(index, 1);
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-    return result;
+async function removeContact(id) {
+    const contact = await getContactById(id);
+    if (!contact) {
+        throw HttpError(404);
+    }
+
+    await Contact.destroy({ where: { id } });
+    return contact;
 }
 
-async function addContact(name, email, phone) {
-    const contacts = await listContacts();
-    const newContact = { id: nanoid(), name, email, phone };
-    contacts.push(newContact);
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-    return newContact;
+async function addContact(payload) {
+    return Contact.create(payload);
 }
 
-async function updateContact(contactId, name, email, phone) {
-    const contacts = await listContacts();
-    const index = contacts.findIndex(contact => contact.id === contactId);
-    if (index === -1) return null;
+async function updateContact(id, payload) {
+    const contact = await getContactById(id);
+    if (!contact) {
+        throw HttpError(404);
+    }
 
-    const contact = contacts[index];
-    const updatedContact = {
-        ...contact,
-        ...(name && { name }),
-        ...(email && { email }),
-        ...(phone && { phone })
-    };
+    const [_, updatedContact] = await Contact.update(payload, { where: { id }, returning: true });
 
-    contacts[index] = updatedContact;
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-    return updatedContact;
+    return updatedContact[0];
+}
+
+async function updateStatusContact(id, favorite) {
+    return updateContact(id, { favorite });
 }
 
 const contactsService = {
@@ -57,6 +44,7 @@ const contactsService = {
     removeContact,
     addContact,
     updateContact,
+    updateStatusContact,
 }
 
 export default contactsService;
