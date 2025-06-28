@@ -5,10 +5,12 @@ import 'dotenv/config';
 import './db/sequelize.js';
 import contactsRouter from './routes/contactsRouter.js';
 import authRouter from './routes/authRouter.js';
-// import Contact from './models/Contact.js';
+import './helpers/multerStorage.js';
+import User from './models/User.js';
 
 const app = express();
 
+app.use(express.static('public'));
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
