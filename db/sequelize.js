@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize";
+import { Sequelize } from 'sequelize';
 
 const sequelize = new Sequelize({
     dialect: process.env.DB_DIALECT,
@@ -7,6 +7,7 @@ const sequelize = new Sequelize({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    logging: false,
     dialectOptions: {
         ssl: {
             require: true,
@@ -14,13 +15,11 @@ const sequelize = new Sequelize({
     },
 });
 
-console.log(process.env.DB_DIALECT, process.env.DB_HOST, process.env.DB_PORT, process.env.DB_USER, process.env.DB_PASSWORD, process.env.DB_NAME);
-
 try {
     await sequelize.authenticate();
-    console.log("Database connection successful.");
+    console.log('Database connection successful.');
 } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    console.error('Unable to connect to the database:', error);
     process.exit(1);
 }
 
