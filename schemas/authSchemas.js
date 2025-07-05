@@ -15,3 +15,11 @@ export const subscriptionSchema = Joi.object({
     subscription: Joi.string().valid('starter', 'pro', 'business').required(),
     id: Joi.number().required(),
 });
+
+export const verifyVerificationTokenSchema = Joi.object({
+    verificationToken: Joi.string().required(),
+});
+
+export const getVerificationEmailSchema = Joi.object({
+    email: Joi.string().pattern(emailRegex).required(),
+});

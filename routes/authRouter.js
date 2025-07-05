@@ -1,6 +1,12 @@
 import express from 'express';
-import validateBody from '../middlewares/validateBody.js';
-import { registerSchema, loginSchema, subscriptionSchema } from '../schemas/authSchemas.js';
+import { validateBody, validateParams } from '../middlewares/requestValidator.js';
+import {
+    registerSchema,
+    loginSchema,
+    subscriptionSchema,
+    verifyVerificationTokenSchema,
+    getVerificationEmailSchema,
+} from '../schemas/authSchemas.js';
 import authCtrl from '../controllers/authControllers.js';
 import authenticate from '../middlewares/authenticate.js';
 
@@ -9,6 +15,14 @@ const authRouter = express.Router();
 authRouter.post('/register', validateBody(registerSchema), authCtrl.register);
 
 authRouter.post('/login', validateBody(loginSchema), authCtrl.login);
+
+authRouter.get(
+    '/verify/:verificationToken',
+    validateParams(verifyVerificationTokenSchema),
+    authCtrl.verifyValidationToken
+);
+
+authRouter.post('/verify', validateBody(getVerificationEmailSchema), authCtrl.getVerificationEmail);
 
 authRouter.use(authenticate);
 
