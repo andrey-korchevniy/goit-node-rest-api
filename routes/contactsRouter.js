@@ -1,7 +1,7 @@
 import express from 'express';
 import contactsCtrl from '../controllers/contactsControllers.js';
 import schemas from '../schemas/contactsSchemas.js';
-import validateBody from '../middlewares/validateBody.js';
+import { validateBody } from '../middlewares/validateBody.js';
 import authenticate from '../middlewares/authenticate.js';
 
 const contactsRouter = express.Router();

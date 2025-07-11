@@ -3,7 +3,6 @@ import ctrlWrapper from '../helpers/ctrlWrapper.js';
 
 const register = async (req, res) => {
     const newUser = await authService.register(req.body);
-    console.log(newUser);
     res.status(201).json({
         user: {
             email: newUser.email,
@@ -39,12 +38,20 @@ const subscription = async (req, res) => {
     });
 };
 
+const updateAvatar = async (req, res) => {
+    const { id } = req.user;
+    const avatarURL = await authService.updateAvatar(id, req.file);
+
+    res.json({ avatarURL });
+};
+
 const authCtrl = {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
     logout: ctrlWrapper(logout),
     current: ctrlWrapper(current),
     subscription: ctrlWrapper(subscription),
+    updateAvatar: ctrlWrapper(updateAvatar),
 };
 
 export default authCtrl;

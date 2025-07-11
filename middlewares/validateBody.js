@@ -1,6 +1,6 @@
 import HttpError from '../helpers/HttpError.js';
 
-const validateBody = schema => {
+export const validateBody = schema => {
     const func = (req, _, next) => {
         const { error } = schema.validate(req.body, { abortEarly: false });
         if (error) {
@@ -17,4 +17,9 @@ const validateBody = schema => {
     return func;
 };
 
-export default validateBody;
+export const validateAvatar = (req, _, next) => {
+    if (!req.file) {
+        return next(HttpError(400, 'No file uploaded'));
+    }
+    next();
+};
